@@ -43,6 +43,11 @@ const docsDir = __dirname + "/documents";
 //         console.log(`API REST running in http://localhost:${port}`)
 //     })
 // })
+
+app.listen(port, () => {
+    console.log(`API REST running in http://localhost:${port}`)
+})
+
 //mongodb+srv://michael:<M1ch43l.c0m>@cluster0-eeqp8.mongodb.net/test?retryWrites=true&w=majority
 mongoose.connect(process.env.DB_CONNECT, { useNewUrlParser: true, useUnifiedTopology: true, autoIndex: false })
     .then(response => {
