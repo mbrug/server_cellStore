@@ -1,0 +1,38 @@
+const User = require('../models/user.model');
+const config = require('../config/config');
+const ROLEs = config.ROLEs;
+
+checkDuplicateUserNameOrEmail = async (req, res, next) => {
+    console.log('from checkDuplicateUserNameOrEmail', req.body.email);
+    const user = await User.findOne({email: req.body.email}, {'email': 1});
+    console.log('este es user', user)
+    if (user) {
+        res.status(400).json({message: 'Email is already in use'})
+        return;
+    }
+    next();
+}
+checkRoleExisted = (req, res, next) => {
+    if (!req.body.role) {
+        res.status(400).json({message: 'The role field is required'});
+        return;
+    }
+    if (!ROLEs.includes(req.body.role.toUpperCase())) {
+        res.status(400).json({message: `Does Not exist role ${req.body.role.toUpperCase()}`});
+        return;
+    }
+    next();
+}
+
+verifyToken  = (req, res, next) => {}
+isAdmin  = (req, res, next) => {}
+isPmOrAdmin  = (req, res, next) => {}
+
+const authService = {};
+authService.checkDuplicateUserNameOrEmail = checkDuplicateUserNameOrEmail;
+authService.checkRoleExisted = checkRoleExisted;
+authService.verifyToken = verifyToken;
+authService.isAdmin = isAdmin;
+authService.isPmOrAdmin = isPmOrAdmin;
+
+module.exports = authService;

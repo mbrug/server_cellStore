@@ -1,0 +1,18 @@
+Application has thrown an uncaught exception and is terminated:
+MongooseError: The `uri` parameter to `openUri()` must be a string, got "undefined". Make sure the first parameter to `mongoose.connect()` or `mongoose.createConnection()` is a string.
+    at new MongooseError (F:\Proyectos\NodeJS\customBank_Api\node_modules\mongoose\lib\error\mongooseError.js:10:11)
+    at NativeConnection.Connection.openUri (F:\Proyectos\NodeJS\customBank_Api\node_modules\mongoose\lib\connection.js:520:11)
+    at Mongoose.connect (F:\Proyectos\NodeJS\customBank_Api\node_modules\mongoose\lib\index.js:328:15)
+    at Object.<anonymous> (F:\Proyectos\NodeJS\customBank_Api\api\index.js:46:10)
+    at Module._compile (internal/modules/cjs/loader.js:776:30)
+    at Object.Module._extensions..js (internal/modules/cjs/loader.js:787:10)
+    at Module.load (internal/modules/cjs/loader.js:653:32)
+    at tryModuleLoad (internal/modules/cjs/loader.js:593:12)
+    at Function.Module._load (internal/modules/cjs/loader.js:585:3)
+    at Module.require (internal/modules/cjs/loader.js:690:17)
+    at require (internal/modules/cjs/helpers.js:25:18)
+    at Object.<anonymous> (C:\Program Files\iisnode\interceptor.js:210:1)
+    at Module._compile (internal/modules/cjs/loader.js:776:30)
+    at Object.Module._extensions..js (internal/modules/cjs/loader.js:787:10)
+    at Module.load (internal/modules/cjs/loader.js:653:32)
+    at tryModuleLoad (internal/modules/cjs/loader.js:593:12)
