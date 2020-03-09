@@ -47,9 +47,9 @@ const docsDir = __dirname + "/documents";
 mongoose.connect(process.env.DB_CONNECT, { useNewUrlParser: true, useUnifiedTopology: true, autoIndex: false })
     .then(response => {
         console.log(`Database connected success http://localhost:${port}`);
-        app.listen(port, () => {
-            console.log(`API REST running in http://localhost:${port}`)
-        })
+        // app.listen(port, () => {
+        //     console.log(`API REST running in http://localhost:${port}`)
+        // })
     })
     .catch(error => {
         console.log('Error Database connection')
