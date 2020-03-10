@@ -46,32 +46,44 @@ register = async (req, res) => {
     }
 }
 login = (req, res) => {
-    User.findOne({ email: req.body.email }, 'email emailConfirmed password')
+    User.findOne({ email: req.body.email }, 'email emailConfirmed password userName')
         .then(user => {
             if (!user) {
-                return res.status(404).send('User Not found');
+                return res.status(404).send({ message: 'User Not found' });
             }
 
             var passwordIsValid = bcrypt.compareSync(req.body.password, user.password);
-            console.log('password Compar', [passwordIsValid, user.password, req.body.password, process.env.MAIL_HOST]);
             if (!passwordIsValid) {
-                return res.status(401).send({ auth: false, accessToken: null, reason: 'Invalid Password' });
+                return res.status(401).send({ auth: false, accessToken: null, message: 'Invalid Password' });
             }
 
             var token = jwt.sign({ id: user._id }, process.env.SECRET_OR_KEY, { expiresIn: 86400 });
 
-            res.status(200).send({ auth: true, accessToken: token, user: user });
-
+            res.status(200).send({ accessToken: token, user: user.userName });
             console.log('user authenticate', user);
         })
         .catch(error => {
-            res.status(500).send('we are problem communicating with your email');
+            res.status(500).send('we are problem communicating with DB');
             console.log('no se envio el correo', error)
         });
 }
 
+refreshToken = (req, res) => {
+    User.findOne({ userName: req.body.user }, 'email emailConfirmed password userName')
+        .then(user => {
+            if (!user) {
+                return res.status(404).send({ message: 'UserName Not found' });
+            }
+            var token = jwt.sign({ id: user._id }, process.env.SECRET_OR_KEY, { expiresIn: 86400 });
+            res.status(200).send({ accessToken: token, user: user.userName });
+
+        })
+        .catch(error => {
+            res.status(500).send('we are problem communicating with DB');
+        })
+}
+
 confirmAccount = (req, res) => {
-    console.log('object', req.body)
     User.updateOne({ emailConfirmed: req.body.idConfirm }, { $set: { emailConfirmed: '' } })
         .then(user => {
             if (!user.nModified) {
@@ -84,47 +96,48 @@ confirmAccount = (req, res) => {
         });
 }
 
-isOwner = (req, res) => {
-    User.findOne({ _id: req.body.id }, 'email')
-        .then(user => {
-            res.status(200).json({ 'description': 'user is Owner', 'user': user });
-        })
-        .catch(error => {
-            res.status(500).json({ 'description': 'user is not Owner', 'error': error });
-        })
-}
-isAdmin = (req, res) => {
-    User.findOne({ _id: req.body.id }, 'email')
-        .then(user => {
-            res.status(200).json({ 'description': 'user is admin', 'user': user });
-        })
-        .catch(error => {
-            res.status(500).json({ 'description': 'user is not admin', 'error': error });
-        })
-}
-isContador = (req, res) => {
-    User.findOne({ _id: req.body.id }, 'email')
-        .then(user => {
-            res.status(200).json({ 'description': 'user is contador', 'user': user });
-        })
-        .catch(error => {
-            res.status(500).json({ 'description': 'user is not contador', 'error': error });
-        })
-}
-isVisor = (req, res) => {
-    User.findOne({ _id: req.body.id }, 'email')
-        .then(user => {
-            res.status(200).json({ 'description': 'user is visor', 'user': user });
-        })
-        .catch(error => {
-            res.status(500).json({ 'description': 'user is not visor', 'error': error });
-        })
-}
+// isOwner = (req, res) => {
+//     User.findOne({ _id: req.body.id }, 'email')
+//         .then(user => {
+//             res.status(200).json({ 'description': 'user is Owner', 'user': user });
+//         })
+//         .catch(error => {
+//             res.status(500).json({ 'description': 'user is not Owner', 'error': error });
+//         })
+// }
+// isAdmin = (req, res) => {
+//     User.findOne({ _id: req.body.id }, 'email')
+//         .then(user => {
+//             res.status(200).json({ 'description': 'user is admin', 'user': user });
+//         })
+//         .catch(error => {
+//             res.status(500).json({ 'description': 'user is not admin', 'error': error });
+//         })
+// }
+// isContador = (req, res) => {
+//     User.findOne({ _id: req.body.id }, 'email')
+//         .then(user => {
+//             res.status(200).json({ 'description': 'user is contador', 'user': user });
+//         })
+//         .catch(error => {
+//             res.status(500).json({ 'description': 'user is not contador', 'error': error });
+//         })
+// }
+// isVisor = (req, res) => {
+//     User.findOne({ _id: req.body.id }, 'email')
+//         .then(user => {
+//             res.status(200).json({ 'description': 'user is visor', 'user': user });
+//         })
+//         .catch(error => {
+//             res.status(500).json({ 'description': 'user is not visor', 'error': error });
+//         })
+// }
 
 const authController = {};
 authController.register = register;
 authController.login = login;
 authController.confirmAccount = confirmAccount;
+authController.refreshToken = refreshToken;
 
 authController.isOwner = this.isOwner;
 authController.isAdmin = this.isAdmin;

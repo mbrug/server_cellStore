@@ -9,6 +9,7 @@ module.exports = (function () {
   api.post('/register', [authService.checkDuplicateUserNameOrEmail, authService.checkRoleExisted], authController.register);
   api.post('/login', authController.login);
   api.post('/confirmAccount', authController.confirmAccount);
+  api.post('/refresh', authController.refreshToken);
 
   return api;
 
