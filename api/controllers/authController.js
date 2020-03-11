@@ -3,6 +3,8 @@ var { registerValidations, loginValidations } = require('../validations/register
 var bcrypt = require('bcrypt');
 var jwt = require('jsonwebtoken');
 const mailer = require('./emailController');
+const ROLEs = require('../config/config').ROLEs;
+
 
 
 register = async (req, res) => {
@@ -15,11 +17,12 @@ register = async (req, res) => {
     const user = new User({
         avatar: 'string',
         userName: req.body.userName,
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
         email: req.body.email,
         password: req.body.password,
+        role: ROLEs[0]
     });
+    console.log('mailOptions', user)
+
     try {
         const savedUser = await user.save();
         const urlConfirm = req.get('origin') + '/auth/confirm-account/' + savedUser.emailConfirmed
@@ -30,7 +33,6 @@ register = async (req, res) => {
             // text: 'Thanks for signing up with Phone Shop! You must follow this link to activate your account:', // plain text body
             html: '<p>Thanks for signing up with Phone Shop! You must follow this link to activate your account:</p><a href="http://' + urlConfirm + '">account</a>' // html body
         };
-        console.log('mailOptions', [mailOptions, urlConfirm])
 
         mailer.sendMail(mailOptions)
             .then(async (response) => {
@@ -46,7 +48,7 @@ register = async (req, res) => {
     }
 }
 login = (req, res) => {
-    User.findOne({ email: req.body.email }, 'email emailConfirmed password userName')
+    User.findOne({ email: req.body.email }, 'email emailConfirmed password userName role')
         .then(user => {
             if (!user) {
                 return res.status(404).send({ message: 'User Not found' });
@@ -59,7 +61,7 @@ login = (req, res) => {
 
             var token = jwt.sign({ id: user._id }, process.env.SECRET_OR_KEY, { expiresIn: 86400 });
 
-            res.status(200).send({ accessToken: token, user: user.userName });
+            res.status(200).send({ accessToken: token, user: user.userName, role: user.role });
             console.log('user authenticate', user);
         })
         .catch(error => {
@@ -69,13 +71,13 @@ login = (req, res) => {
 }
 
 refreshToken = (req, res) => {
-    User.findOne({ userName: req.body.user }, 'email emailConfirmed password userName')
+    User.findOne({ userName: req.body.user }, 'email emailConfirmed password userName role')
         .then(user => {
             if (!user) {
                 return res.status(404).send({ message: 'UserName Not found' });
             }
             var token = jwt.sign({ id: user._id }, process.env.SECRET_OR_KEY, { expiresIn: 86400 });
-            res.status(200).send({ accessToken: token, user: user.userName });
+            res.status(200).send({ accessToken: token, user: user.userName, role: user.role });
 
         })
         .catch(error => {

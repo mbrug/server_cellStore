@@ -1,8 +1,7 @@
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
-const config = require('../config/config');
-const ROLEs = config.ROLEs;
+const ROLEs = require('../config/config').ROLEs;
 
 const Schema = mongoose.Schema;
 
@@ -13,8 +12,6 @@ const UserSchema = new Schema({
         required: true,
         unique: true
     },
-    firstName: String,
-    lastName: String,
     email: {
         type: String,
         required: true,
