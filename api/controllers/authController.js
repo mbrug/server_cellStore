@@ -59,9 +59,9 @@ login = (req, res) => {
                 return res.status(401).send({ auth: false, accessToken: null, message: 'Invalid Password' });
             }
 
-            var token = jwt.sign({ id: user._id }, process.env.SECRET_OR_KEY, { expiresIn: 86400 });
+            var token = jwt.sign({ id: user._id, user: user.userName, role: user.role }, process.env.SECRET_OR_KEY, { expiresIn: 86400 });
 
-            res.status(200).send({ accessToken: token, user: user.userName, role: user.role });
+            res.json({ accessToken: token, user: user.userName, role: user.role });
             console.log('user authenticate', user);
         })
         .catch(error => {
