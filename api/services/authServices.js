@@ -28,8 +28,8 @@ checkRoleExisted = (req, res, next) => {
 verifyToken = async (req, res, next) => {
     console.log('resverifyToken', req.get('phonelicence'))
     let token = req.get('phonelicence')
-    console.log('Token', token.accessToken)
-    await jwt.verify(token.accessToken, process.env.SECRET_OR_KEY, (err, decoded) => {
+    console.log('Token', token)
+    await jwt.verify(token, process.env.SECRET_OR_KEY, (err, decoded) => {
         console.log('err', err)
         console.log('decoded', decoded)
         if (err) {

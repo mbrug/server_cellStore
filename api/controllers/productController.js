@@ -1,6 +1,8 @@
 var Product = require('../models/product.model')
 
 addProduct = async (req, res) => {
+    const imagePath = req.file ? '/uploads/' + req.file.filename : '';
+
     const prod = new Product({
         brand: req.body.brand,
         model: req.body.model,
@@ -9,16 +11,37 @@ addProduct = async (req, res) => {
         storage: req.body.storage,
         memory: req.body.memory,
         battery: req.body.battery,
-        image: req.body.image,
+        image: imagePath,
         dualSim: req.body.dualSim
     });
+    console.log('addProduct', [req.body, req.file, imagePath])
     await prod.save()
     res.send({ message: 'product created succesfully' });
 }
 
 listProduct = async (req, res) => {
-    const prod = await Product.find().sort('-_id');
-    res.json(prod);
+    var perPage = 2;
+    var page = 1;
+    var productResult = null;
+
+
+
+
+
+    Product.find().sort('-_id').skip((page - 1) * perPage).limit(perPage)
+        .then(product => {
+            res.set('X-limit', perPage);
+            res.set('X-page', page);
+            productResult = product;
+            return Product.count();
+        })
+        .then(result => {
+            res.set('X-total', result);
+            res.status(200).send({ productResult });
+        })
+        .catch((err) => {
+            res.status(500).send({ message: "Error en la petición" });
+        });
 }
 
 updateProduct = async (req, res) => {
