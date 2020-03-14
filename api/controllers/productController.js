@@ -20,7 +20,7 @@ addProduct = async (req, res) => {
 }
 
 listProduct = async (req, res) => {
-    var perPage = 2;
+    var perPage = 4;
     var page = 1;
     var productResult = null;
 
