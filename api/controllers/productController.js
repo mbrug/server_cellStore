@@ -13,7 +13,8 @@ addProduct = async (req, res) => {
         memory: req.body.memory,
         battery: req.body.battery,
         image: imagePath,
-        dualSim: req.body.dualSim
+        dualSim: req.body.dualSim,
+        price: req.body.price
     });
     console.log('addProduct', [req.body, req.file, imagePath])
     await prod.save()
@@ -44,7 +45,7 @@ listProduct = async (req, res) => {
 
 dataLoadForm = async (req, res) => {
     const productID = req.params.id;
-    const product = await Product.findOne()
+    const product = await Product.findOne({ _id: productID })
     const brands = await Brand.find().sort('-_id')
     if (productID) {
         res.json({ brands, product })
@@ -56,7 +57,31 @@ dataLoadForm = async (req, res) => {
 }
 
 updateProduct = async (req, res) => {
-    res.send('update product');
+    const imagePath = req.file ? '/uploads/' + req.file.filename : '';
+
+    const prod = {
+        brand: req.body.brand,
+        model: req.body.model,
+        screen: req.body.screen,
+        camera: req.body.camera,
+        storage: req.body.storage,
+        memory: req.body.memory,
+        battery: req.body.battery,
+        image: imagePath,
+        dualSim: req.body.dualSim,
+        price: req.body.price
+    };
+    let arrayKeys = Object.keys(prod)
+    arrayKeys.forEach((element) => {
+        if (prod[element]) {
+
+        } else {
+            delete prod[element]
+        }
+    })
+    console.log('updateProduct', [req.body._id, req.file, imagePath, prod])
+    await Product.update({ _id: req.body._id }, prod)
+    res.send({ message: 'product updated succesfully' });
 }
 
 deleteProduct = async (req, res) => {

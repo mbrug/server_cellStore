@@ -12,6 +12,9 @@ const ProductSchema = new Schema({
     screen: {
         type: mongoose.Schema.Types.Decimal128,
     },
+    price: {
+        type: Number,
+    },
     camera: {
         type: Number,
     },
