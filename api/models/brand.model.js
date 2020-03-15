@@ -7,8 +7,8 @@ const BrandSchema = new Schema({
         type: String,
         required: true
     },
-    model: [{ name: String }],
+    models: [{ name: String }],
 });
 
-const AccountModel = mongoose.model('brand', BrandSchema);
-module.exports = AccountModel;
+const BrandModel = mongoose.model('brands', BrandSchema);
+module.exports = BrandModel;

@@ -1,4 +1,5 @@
 var Product = require('../models/product.model')
+var Brand = require('../models/brand.model')
 
 addProduct = async (req, res) => {
     const imagePath = req.file ? '/uploads/' + req.file.filename : '';
@@ -25,9 +26,6 @@ listProduct = async (req, res) => {
     var productResult = null;
 
 
-
-
-
     Product.find().sort('-_id').skip((page - 1) * perPage).limit(perPage)
         .then(product => {
             res.set('X-limit', perPage);
@@ -44,6 +42,19 @@ listProduct = async (req, res) => {
         });
 }
 
+dataLoadForm = async (req, res) => {
+    const productID = req.params.id;
+    const product = await Product.findOne()
+    const brands = await Brand.find().sort('-_id')
+    if (productID) {
+        res.json({ brands, product })
+    } else {
+        res.json({ brands })
+    }
+
+
+}
+
 updateProduct = async (req, res) => {
     res.send('update product');
 }
@@ -58,6 +69,7 @@ const productController = {};
 productController.addProduct = addProduct;
 productController.listProduct = listProduct;
 productController.updateProduct = updateProduct;
+productController.dataLoadForm = dataLoadForm;
 productController.deleteProduct = deleteProduct;
 
 module.exports = productController;
