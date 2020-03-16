@@ -14,7 +14,8 @@ addProduct = async (req, res) => {
         battery: req.body.battery,
         image: imagePath,
         dualSim: req.body.dualSim,
-        price: req.body.price
+        price: req.body.price,
+        owner: req.userData.id
     });
     console.log('addProduct', [req.body, req.file, imagePath])
     await prod.save()
@@ -25,9 +26,9 @@ listProduct = async (req, res) => {
     var perPage = 4;
     var page = 1;
     var productResult = null;
+    console.log('user', [req.userData])
 
-
-    Product.find().sort('-_id').skip((page - 1) * perPage).limit(perPage)
+    Product.find({ owner: req.userData.id }).sort('-_id').skip((page - 1) * perPage).limit(perPage)
         .then(product => {
             res.set('X-limit', perPage);
             res.set('X-page', page);
@@ -36,6 +37,34 @@ listProduct = async (req, res) => {
         })
         .then(result => {
             res.set('X-total', result);
+            res.status(200).send({ productResult });
+        })
+        .catch((err) => {
+            res.status(500).send({ message: "Error en la petición" });
+        });
+}
+listAllProduct = async (req, res) => {
+    var brandFilter = req.params.brand
+    console.log('listAllProduct', [brandFilter, req.params.brand])
+
+    var query = {}
+    if (brandFilter) {
+        query = { brand: brandFilter }
+    }
+    var perPage = 4;
+    var page = 1;
+    var productResult = null;
+
+    Product.find(query).sort('-_id').skip((page - 1) * perPage).limit(perPage)
+        .then(product => {
+            res.set('X-limit', perPage);
+            res.set('X-page', page);
+            productResult = product;
+            return Product.count();
+        })
+        .then(result => {
+            res.set('X-total', result);
+
             res.status(200).send({ productResult });
         })
         .catch((err) => {
@@ -93,6 +122,7 @@ deleteProduct = async (req, res) => {
 const productController = {};
 productController.addProduct = addProduct;
 productController.listProduct = listProduct;
+productController.listAllProduct = listAllProduct;
 productController.updateProduct = updateProduct;
 productController.dataLoadForm = dataLoadForm;
 productController.deleteProduct = deleteProduct;

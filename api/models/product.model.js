@@ -33,6 +33,9 @@ const ProductSchema = new Schema({
     dualSim: {
         type: Boolean,
     },
+    owner: {
+        type: String,
+    },
 });
 
 const ProductModel = mongoose.model('product', ProductSchema);

@@ -36,6 +36,7 @@ verifyToken = async (req, res, next) => {
             res.status(401).json({ message: 'UnAutorized Token' })
             return
         }
+        req.userData = decoded
         next();
     });
 }
