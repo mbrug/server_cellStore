@@ -6,8 +6,8 @@ module.exports = (function () {
     const productController = require('../controllers/productController');
 
 
+    productRoutes.get('/:id', productController.dataLoadForm);
     productRoutes.get('/', productController.listProduct);
-    productRoutes.get('/load/:id', productController.dataLoadForm);
     // productRoutes.get('/load', productController.dataLoadForm);
     productRoutes.post('/', productController.addProduct);
     productRoutes.put('/', productController.updateProduct);

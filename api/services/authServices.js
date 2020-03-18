@@ -40,14 +40,10 @@ verifyToken = async (req, res, next) => {
         next();
     });
 }
-isAdmin = (req, res, next) => { }
-isPmOrAdmin = (req, res, next) => { }
 
 const authService = {};
 authService.checkDuplicateUserNameOrEmail = checkDuplicateUserNameOrEmail;
 authService.checkRoleExisted = checkRoleExisted;
 authService.verifyToken = verifyToken;
-authService.isAdmin = isAdmin;
-authService.isPmOrAdmin = isPmOrAdmin;
 
 module.exports = authService;

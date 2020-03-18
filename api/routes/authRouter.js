@@ -6,6 +6,9 @@ module.exports = (function () {
   const authController = require('../controllers/authController');
   const authService = require('../services/authServices');
 
+  authRoutes.get('/users', [authService.verifyToken], authController.listUsers);
+
+
   authRoutes.post('/register', [authService.checkDuplicateUserNameOrEmail], authController.register);
   authRoutes.post('/login', authController.login);
   authRoutes.post('/confirmAccount', authController.confirmAccount);

@@ -1,9 +1,15 @@
 var Brand = require('../models/brand.model')
+var Model = require('../models/model.model')
 
 addBrand = async (req, res) => {
+    const model = new Model({
+        name: 'maikel'
+    })
+    await model.save();
+
     const brand = new Brand({
         name: req.body.name,
-        models: req.body.models,
+        models: [model],
     });
     await brand.save()
     res.send({ message: 'brand created succesfully' });
@@ -11,12 +17,15 @@ addBrand = async (req, res) => {
 
 listBrand = async (req, res) => {
     Brand.find().sort('-_id')
-        .then(result => {
-            res.status(200).json({ brandResult: result });
+        .populate('models')
+        .exec((err, brands) => {
+            console.log("Populated User " + brands);
+            if (err) {
+                res.status(500).json({ message: "Error request" });
+            } else {
+                res.status(200).json({ brandResult: brands });
+            }
         })
-        .catch((err) => {
-            res.status(500).json({ message: "Error request" });
-        });
 }
 
 updateBrand = async (req, res) => {

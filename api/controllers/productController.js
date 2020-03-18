@@ -28,61 +28,73 @@ listProduct = async (req, res) => {
     var productResult = null;
     console.log('user', [req.userData])
 
-    Product.find({ owner: req.userData.id }).sort('-_id').skip((page - 1) * perPage).limit(perPage)
-        .then(product => {
-            res.set('X-limit', perPage);
-            res.set('X-page', page);
-            productResult = product;
-            return Product.count();
+    Product.find({ owner: req.userData.id })
+        .sort('-_id').skip((page - 1) * perPage).limit(perPage)
+        .populate('brand')
+        .populate('model')
+        .exec((err, product) => {
+            if (err) {
+                res.status(500).send({ message: "Error en la petición" });
+
+            } else {
+                res.set('X-limit', perPage);
+                res.set('X-page', page);
+                productResult = product;
+                // return Product.count();
+                // res.set('X-total', result);
+                res.status(200).send({ productResult });
+            }
         })
-        .then(result => {
-            res.set('X-total', result);
-            res.status(200).send({ productResult });
-        })
-        .catch((err) => {
-            res.status(500).send({ message: "Error en la petición" });
-        });
+
 }
 listAllProduct = async (req, res) => {
     var brandFilter = req.params.brand
     console.log('listAllProduct', [brandFilter, req.params.brand])
 
+    const brand = await Brand.findOne({ name: brandFilter })
+
     var query = {}
     if (brandFilter) {
-        query = { brand: brandFilter }
+        query = { brand: brand._id }
     }
+    console.log('listAllProduct2', [query, brand])
+
+
     var perPage = 4;
     var page = 1;
-    var productResult = null;
+    var productResult = [];
+    console.log('brand', [brand, query])
 
-    Product.find(query).sort('-_id').skip((page - 1) * perPage).limit(perPage)
-        .then(product => {
-            res.set('X-limit', perPage);
-            res.set('X-page', page);
-            productResult = product;
-            return Product.count();
-        })
-        .then(result => {
-            res.set('X-total', result);
+    Product.find(query)
+        .sort('-_id').skip((page - 1) * perPage).limit(perPage)
+        .populate('brand')
+        .populate('model')
+        .exec((err, product) => {
+            if (err) {
+                res.status(500).send({ message: "Error en la petición" });
 
-            res.status(200).send({ productResult });
+            } else {
+                res.set('X-limit', perPage);
+                res.set('X-page', page);
+                productResult = product;
+                // return Product.count();
+                // res.set('X-total', result);
+                res.status(200).send({ productResult });
+            }
         })
-        .catch((err) => {
-            res.status(500).send({ message: "Error en la petición" });
-        });
 }
 
 dataLoadForm = async (req, res) => {
     const productID = req.params.id;
-    const product = await Product.findOne({ _id: productID })
-    const brands = await Brand.find().sort('-_id')
-    if (productID) {
-        res.json({ brands, product })
-    } else {
-        res.json({ brands })
-    }
-
-
+    console.log('dataload', req.params.id)
+    Product.findOne({ _id: productID }, (err, product) => {
+        console.log('prod', err, product)
+        if (err) {
+            res.status(500).send({ message: "Error en la petición" });
+        } else {
+            res.status(200).send({ product });
+        }
+    })
 }
 
 updateProduct = async (req, res) => {

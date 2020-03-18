@@ -98,48 +98,29 @@ confirmAccount = (req, res) => {
         });
 }
 
-// isOwner = (req, res) => {
-//     User.findOne({ _id: req.body.id }, 'email')
-//         .then(user => {
-//             res.status(200).json({ 'description': 'user is Owner', 'user': user });
-//         })
-//         .catch(error => {
-//             res.status(500).json({ 'description': 'user is not Owner', 'error': error });
-//         })
-// }
-// isAdmin = (req, res) => {
-//     User.findOne({ _id: req.body.id }, 'email')
-//         .then(user => {
-//             res.status(200).json({ 'description': 'user is admin', 'user': user });
-//         })
-//         .catch(error => {
-//             res.status(500).json({ 'description': 'user is not admin', 'error': error });
-//         })
-// }
-// isContador = (req, res) => {
-//     User.findOne({ _id: req.body.id }, 'email')
-//         .then(user => {
-//             res.status(200).json({ 'description': 'user is contador', 'user': user });
-//         })
-//         .catch(error => {
-//             res.status(500).json({ 'description': 'user is not contador', 'error': error });
-//         })
-// }
-// isVisor = (req, res) => {
-//     User.findOne({ _id: req.body.id }, 'email')
-//         .then(user => {
-//             res.status(200).json({ 'description': 'user is visor', 'user': user });
-//         })
-//         .catch(error => {
-//             res.status(500).json({ 'description': 'user is not visor', 'error': error });
-//         })
-// }
+listUsers = (req, res) => {
+    if (req.userData.role != 'admin') {
+        res.status(401).json({ message: 'UnAutorized Token' })
+        return
+    } else {
+        User.find()
+            .then(usersList => {
+                res.status(200).json({ usersList });
+
+            })
+            .catch(error => {
+                res.status(500).send('we are problem communicating with DB');
+            })
+    }
+}
 
 const authController = {};
 authController.register = register;
 authController.login = login;
 authController.confirmAccount = confirmAccount;
 authController.refreshToken = refreshToken;
+
+authController.listUsers = listUsers;
 
 authController.isOwner = this.isOwner;
 authController.isAdmin = this.isAdmin;

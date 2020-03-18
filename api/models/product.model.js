@@ -1,13 +1,17 @@
 const mongoose = require('mongoose')
+require('./brand.model')
+
 
 const Schema = mongoose.Schema;
 
 const ProductSchema = new Schema({
     brand: {
-        type: String,
+        type: Schema.Types.ObjectId,
+        ref: 'Brand'
     },
     model: {
-        type: String,
+        type: Schema.Types.ObjectId,
+        ref: 'Model'
     },
     screen: {
         type: mongoose.Schema.Types.Decimal128,

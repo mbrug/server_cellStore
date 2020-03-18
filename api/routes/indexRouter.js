@@ -14,7 +14,7 @@ module.exports = function (app) {
 
   app.use("/api/auth", authRouter);
   app.use("/api/product", [authService.verifyToken], productRouter);
-  app.use("/api/brand", [authService.verifyToken], brandRouter);
+  app.use("/api/brand", brandRouter);
 
 
 
