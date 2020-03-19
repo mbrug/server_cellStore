@@ -21,11 +21,12 @@ register = async (req, res) => {
         password: req.body.password,
         role: ROLEs[0]
     });
-    console.log('mailOptions', user)
 
     try {
         const savedUser = await user.save();
-        const urlConfirm = req.get('origin') + '/auth/confirm-account/' + savedUser.emailConfirmed
+        let urlRequest = req.get('origin').split('//')
+        console.log('origin', urlRequest)
+        const urlConfirm = urlRequest[1] + '/auth/confirm-account/' + savedUser.emailConfirmed
         let mailOptions = {
             from: '"Phone Shop Team 👻"', // sender address
             to: savedUser.email, // list of receivers
@@ -36,12 +37,10 @@ register = async (req, res) => {
 
         mailer.sendMail(mailOptions)
             .then(async (response) => {
-                console.log('si se envio el correo', response);
                 res.send({ message: 'account created successfully', email: savedUser.email });
             })
             .catch(error => {
                 res.status(400).send('we are problem communicating with your email');
-                console.log('no se envio el correo', error)
             });
     } catch (error) {
         res.status(400).send(error);
@@ -62,11 +61,9 @@ login = (req, res) => {
             var token = jwt.sign({ id: user._id, user: user.userName, role: user.role }, process.env.SECRET_OR_KEY, { expiresIn: 86400 });
 
             res.json({ accessToken: token, user: user.userName, role: user.role });
-            console.log('user authenticate', user);
         })
         .catch(error => {
             res.status(500).send('we are problem communicating with DB');
-            console.log('no se envio el correo', error)
         });
 }
 
@@ -106,11 +103,29 @@ listUsers = (req, res) => {
         User.find()
             .then(usersList => {
                 res.status(200).json({ usersList });
-
             })
             .catch(error => {
                 res.status(500).send('we are problem communicating with DB');
             })
+    }
+}
+UpdateUser = (req, res) => {
+    res.send('fine')
+}
+
+DeleteUser = async (req, res) => {
+    if (req.userData.role != 'admin') {
+        res.status(401).json({ message: 'UnAutorized Token' })
+        return
+    } else {
+
+        User.findByIdAndDelete(req.params.id, (err, user) => {
+            if (err) {
+                res.status(500).send('we are problem communicating with DB');
+            } else {
+                res.status(200).json({ message: 'User deleted succesfully' });
+            }
+        })
     }
 }
 
@@ -121,6 +136,8 @@ authController.confirmAccount = confirmAccount;
 authController.refreshToken = refreshToken;
 
 authController.listUsers = listUsers;
+authController.UpdateUser = UpdateUser;
+authController.DeleteUser = DeleteUser;
 
 authController.isOwner = this.isOwner;
 authController.isAdmin = this.isAdmin;

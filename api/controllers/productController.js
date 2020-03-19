@@ -17,7 +17,6 @@ addProduct = async (req, res) => {
         price: req.body.price,
         owner: req.userData.id
     });
-    console.log('addProduct', [req.body, req.file, imagePath])
     await prod.save()
     res.send({ message: 'product created succesfully' });
 }
@@ -26,7 +25,6 @@ listProduct = async (req, res) => {
     var perPage = 4;
     var page = 1;
     var productResult = null;
-    console.log('user', [req.userData])
 
     Product.find({ owner: req.userData.id })
         .sort('-_id').skip((page - 1) * perPage).limit(perPage)
@@ -49,7 +47,6 @@ listProduct = async (req, res) => {
 }
 listAllProduct = async (req, res) => {
     var brandFilter = req.params.brand
-    console.log('listAllProduct', [brandFilter, req.params.brand])
 
     const brand = await Brand.findOne({ name: brandFilter })
 
@@ -57,13 +54,10 @@ listAllProduct = async (req, res) => {
     if (brandFilter) {
         query = { brand: brand._id }
     }
-    console.log('listAllProduct2', [query, brand])
-
 
     var perPage = 4;
     var page = 1;
     var productResult = [];
-    console.log('brand', [brand, query])
 
     Product.find(query)
         .sort('-_id').skip((page - 1) * perPage).limit(perPage)
@@ -86,9 +80,7 @@ listAllProduct = async (req, res) => {
 
 dataLoadForm = async (req, res) => {
     const productID = req.params.id;
-    console.log('dataload', req.params.id)
     Product.findOne({ _id: productID }, (err, product) => {
-        console.log('prod', err, product)
         if (err) {
             res.status(500).send({ message: "Error en la petición" });
         } else {
@@ -120,14 +112,12 @@ updateProduct = async (req, res) => {
             delete prod[element]
         }
     })
-    console.log('updateProduct', [req.body._id, req.file, imagePath, prod])
     await Product.update({ _id: req.body._id }, prod)
     res.send({ message: 'product updated succesfully' });
 }
 
 deleteProduct = async (req, res) => {
     const prod = await Product.findByIdAndDelete(req.params.id);
-    console.log('eliminado->', prod)
     res.json({ message: 'product Deleted' });
 }
 
