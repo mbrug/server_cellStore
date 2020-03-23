@@ -30,7 +30,8 @@ listProduct = async (req, res) => {
     var productResult = null;
 
     Product.find({ owner: req.userData.id })
-        .sort('-_id').skip((page - 1) * perPage).limit(perPage)
+        //if paginate element
+        // .sort('-_id').skip((page - 1) * perPage).limit(perPage)
         .populate('brand')
         .populate('model')
         .exec((err, product) => {
@@ -63,7 +64,8 @@ listAllProduct = async (req, res) => {
     var productResult = [];
 
     Product.find(query)
-        .sort('-_id').skip((page - 1) * perPage).limit(perPage)
+        //if paginate element
+        // .sort('-_id').skip((page - 1) * perPage).limit(perPage)
         .populate('brand')
         .populate('model')
         .exec((err, product) => {
