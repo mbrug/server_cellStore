@@ -23,13 +23,11 @@ register = async (req, res) => {
     });
 
     try {
-        const savedUser = await user.save();
         let urlRequest = req.get('origin').split('//')
-        console.log('origin', urlRequest)
-        const urlConfirm = urlRequest[1] + '/auth/confirm-account/' + savedUser.emailConfirmed
+        const urlConfirm = urlRequest[1] + '/auth/confirm-account/' + req.body.email
         let mailOptions = {
             from: '"Phone Shop Team 👻"', // sender address
-            to: savedUser.email, // list of receivers
+            to: req.body.email, // list of receivers
             subject: 'Phone Shop ✔', // Subject line
             // text: 'Thanks for signing up with Phone Shop! You must follow this link to activate your account:', // plain text body
             html: '<p>Thanks for signing up with Phone Shop! You must follow this link to activate your account:</p><a href="http://' + urlConfirm + '">account</a>' // html body
@@ -37,6 +35,7 @@ register = async (req, res) => {
 
         mailer.sendMail(mailOptions)
             .then(async (response) => {
+                const savedUser = await user.save();
                 res.send({ message: 'account created successfully', email: savedUser.email });
             })
             .catch(error => {
@@ -110,7 +109,30 @@ listUsers = (req, res) => {
     }
 }
 UpdateUser = (req, res) => {
-    res.send('fine')
+    const authUser = {
+        userName: req.body.userName,
+        email: req.body.email,
+    };
+    let arrayKeys = Object.keys(authUser)
+    arrayKeys.forEach((element) => {
+        if (authUser[element]) {
+
+        } else {
+            delete authUser[element]
+        }
+    })
+    User.findOneAndUpdate({ _id: req.body._id }, {
+        userName: req.body.userName,
+        email: req.body.email,
+    }).then(usersList => {
+        res.status(200).json({ usersList });
+    })
+        .catch(error => {
+            res.status(500).send('we are problem communicating with DB');
+        })
+
+
+    res.send({ message: 'User updated succesfully' });
 }
 
 DeleteUser = async (req, res) => {
@@ -118,7 +140,6 @@ DeleteUser = async (req, res) => {
         res.status(401).json({ message: 'UnAutorized Token' })
         return
     } else {
-
         User.findByIdAndDelete(req.params.id, (err, user) => {
             if (err) {
                 res.status(500).send('we are problem communicating with DB');

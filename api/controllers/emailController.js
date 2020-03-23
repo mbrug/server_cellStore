@@ -15,14 +15,6 @@ class Mailer {
     }
 
     sendMail(mailOptions) {
-    //     this.transporter.sendMail(mailOptions, (error, info) => {
-    //     if (error) {
-    //         return console.log('error to send email', error)
-    //     }
-    //     console.log('Message sent: %s', info.messageId);
- 
-    //     console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
-    //    });
         return this.transporter.sendMail(mailOptions);
     }
 

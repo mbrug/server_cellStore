@@ -11,6 +11,7 @@ module.exports = function (app) {
   app.use("/api/product/load", productController.dataLoadForm);
   app.use("/api/allproduct/:brand", productController.listAllProduct);
   app.use("/api/allproduct", productController.listAllProduct);
+  app.use("/api/purchase", productController.purchase);
 
   app.use("/api/auth", authRouter);
   app.use("/api/product", [authService.verifyToken], productRouter);

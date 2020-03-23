@@ -1,5 +1,8 @@
 var Product = require('../models/product.model')
 var Brand = require('../models/brand.model')
+var User = require('../models/user.model');
+const mailer = require('./emailController');
+
 
 addProduct = async (req, res) => {
     const imagePath = req.file ? '/uploads/' + req.file.filename : '';
@@ -121,6 +124,63 @@ deleteProduct = async (req, res) => {
     res.json({ message: 'product Deleted' });
 }
 
+purchase = async (req, res) => {
+    const listProduct = req.body.listProd;
+    const total = req.body.total;
+    const address = req.body.address;
+    let listEmail = []
+    listProduct.map((element) => {
+        listEmail.push(element.owner)
+    })
+    record = await User.find().select('email').where('_id').in(listEmail).exec()
+
+    record.forEach((item) => {
+        let products = `<p>A user wants to buy the following list of products and expects to receive that at this address ${address}</p> </br> 
+        <table> 
+        <tr>
+            <th>Cant</th>
+            <th>Brand</th>
+            <th>Model</th>
+        </tr>`
+        listProduct.forEach((element) => {
+            if (element.owner == item._id) {
+                products = products + `<tr>
+                <td>${element.cant}</td>
+                <td>${element.brand.name}</td>
+                <td>${element.model.name}</td>
+            </tr>`
+            }
+        })
+        products = products + '<table>'
+
+        try {
+            // let urlRequest = req.get('origin').split('//')
+            let mailOptions = {
+                from: '"Phone Shop Team 👻"', // sender address
+                to: item.email, // list of receivers
+                subject: 'Notification Purchase ✔', // Subject line
+                html: products // html body
+            };
+
+            mailer.sendMail(mailOptions)
+                .then(async (response) => {
+                    // res.send({ message: 'Purchase Order successfully', email: item.email });
+                })
+                .catch(error => {
+                    // res.status(400).send('we have problem communicating with seller\'s email');
+                });
+        } catch (error) {
+            // res.status(400).send(error);
+        }
+
+    })
+    res.send({ message: 'Purchase Order successfully' });
+
+
+
+
+}
+
 const productController = {};
 productController.addProduct = addProduct;
 productController.listProduct = listProduct;
@@ -128,5 +188,6 @@ productController.listAllProduct = listAllProduct;
 productController.updateProduct = updateProduct;
 productController.dataLoadForm = dataLoadForm;
 productController.deleteProduct = deleteProduct;
+productController.purchase = purchase;
 
 module.exports = productController;
