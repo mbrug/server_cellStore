@@ -38,6 +38,11 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cookieParser());
 
+
+// Static files
+app.use(express.static(path.join(__dirname, 'public')));
+
+
 // Routers
 app.use(express.static(path.join(__dirname, 'build')));
 
@@ -48,8 +53,7 @@ app.get('/*', (req, res) => {
 });
 
 
-// Static files
-app.use(express.static(path.join(__dirname, 'public')));
+
 
 
 // Create document folders if dont exists
