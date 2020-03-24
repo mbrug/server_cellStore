@@ -20,12 +20,13 @@ module.exports = function (app) {
 
 
   var api = express.Router();
-  api.get('/', function (req, res, next) {
-    res.send('home page');
-  });
-  api.get('/admin', function (req, res, next) {
-    res.send('admin');
-  });
+
+  // api.get('/', function (req, res, next) {
+  //   res.send('home page');
+  // });
+  // api.get('/admin', function (req, res, next) {
+  //   res.send('admin');
+  // });
 
   return api;
 

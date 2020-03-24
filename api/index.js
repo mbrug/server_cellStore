@@ -10,6 +10,7 @@ var cors = require('cors');
 const multer = require('multer');
 var path = require('path');
 
+
 //require local files
 var indexRouter = require('./routes/indexRouter');
 
@@ -38,7 +39,14 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Routers
+app.use(express.static(path.join(__dirname, 'build')));
+
+
 app.use("/api", indexRouter(app));
+app.get('/*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
+
 
 // Static files
 app.use(express.static(path.join(__dirname, 'public')));
